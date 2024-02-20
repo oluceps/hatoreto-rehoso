@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "hatoreto-rehoso"
+version = "0.1.0"
+description = "Heartrate re-broadcast for whawei band serie heartwares"
+authors = ["oluceps <i@oluceps.uk>"]
+license = "MIT"
+readme = "README.md"
+
+packages = [
+    { include = "main.py" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.13"
+bleak = "^0.21.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+hatoreto-rehoso = 'main:start'

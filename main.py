@@ -3,6 +3,13 @@ from bleak import BleakClient, BleakScanner
 from bleak.backends.characteristic import BleakGATTCharacteristic
 import logging
 import os
+import threading
+import http.server
+from http import HTTPStatus
+import json
+
+global rate
+rate=0
 
 def load_env():
     global DEVICE_ADDRESS,NOTIFY_UUID,WRITE_UUID
@@ -27,6 +34,7 @@ async def main():
         logging.info("Connected")
 
         def ntfy_handler(sender, data):
+            global rate
             rate = int(data[1])
             print(f"\rHeart rate [ {rate} ]", end='')
 
@@ -35,7 +43,20 @@ async def main():
         while True:
             await asyncio.sleep(10.0)
 
+class RateHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(HTTPStatus.OK)
+        self.send_header('Content-type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps({'rate': rate}).encode())
+
+def run_http_server():
+    server_address = ('0.0.0.0', 7000)
+    httpd = http.server.HTTPServer(server_address, RateHandler)
+    httpd.serve_forever()
+
 def start():
+    threading.Thread(target=run_http_server).start()
     asyncio.run(main())
 
 if __name__ == "__main__":

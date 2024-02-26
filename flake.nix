@@ -40,6 +40,7 @@
             };
             packages = with pkgs;[
               bun
+              biome
             ];
             dotenv.enable = true;
             enterShell = ''

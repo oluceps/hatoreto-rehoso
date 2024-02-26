@@ -36,7 +36,7 @@ async def main():
         def ntfy_handler(sender, data):
             global rate
             rate = int(data[1])
-            print(f"\rHeart rate [ {rate} ]", end='')
+            print(f"\rHeart rate [ {rate} ]", end='\n')
 
         await client.start_notify(NOTIFY_UUID,  ntfy_handler)
 

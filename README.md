@@ -14,3 +14,23 @@ WRITE_UUID:
 ```console
   nix build
 ```
+
+## run
+
+1. edit `.env` and fill `DEVICE_ADDRESS=<MAC>`
+2. `python main.py`
+3. `cd hosoer && bun run dev`
+
+## API
+
+```
+  HTTP GET -> url
+  response: { "rate": number }
+```
+
+## web
+
+```
+  cd hosoer
+  bun run dev
+```

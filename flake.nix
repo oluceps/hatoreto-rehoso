@@ -34,6 +34,13 @@
               enable = true;
               poetry.enable = true;
             };
+            languages.javascript = {
+              enable = true;
+              npm.install.enable = false;
+            };
+            packages = with pkgs;[
+              bun
+            ];
             dotenv.enable = true;
             enterShell = ''
               export LD_LIBRARY_PATH="${pkgs.stdenv.cc.cc.lib}/lib"

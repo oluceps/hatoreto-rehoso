@@ -31,3 +31,5 @@
   cd hosoer
   bun run dev
 ```
+
+![](./.attach/view.png)

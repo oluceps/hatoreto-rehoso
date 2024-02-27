@@ -1,6 +1,5 @@
 import asyncio
 from bleak import BleakClient, BleakScanner
-from bleak.backends.characteristic import BleakGATTCharacteristic
 import logging
 import os
 import threading

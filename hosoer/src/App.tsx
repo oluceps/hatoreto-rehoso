@@ -13,9 +13,7 @@ const App: Component = () => {
 
 	return (
 		<div class="w-screen h-screen overflow-hidden">
-			<div class="flex-row justify-end items-center h-auto bg-cerise-red-50">
-				test
-			</div>
+			<div class="flex-row justify-end items-center h-auto bg-cerise-red-50" />
 			<div class="bg-cerise-red-50 backdrop-filter-none h-full w-full grid grid-rows-5 grid-cols-3 ">
 				<div class="flex overflow-auto justify-end items-center shadow-lg row-start-2 row-span-2 col-start-2 col-span-1 bg-cerise-red-100 rounded-xl">
 					<div class="animate-pulse w-full flex justify-start items-center ml-11">

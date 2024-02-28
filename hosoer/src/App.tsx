@@ -37,8 +37,11 @@ const App: Component = () => {
 						</div>
 					</div>
 
-					<span class="mr-10 shadow-sm font-mono text-6xl text-cerise-red-50 bg-cerise-red-400 pt-6 px-6 py-3 rounded-md">
+					<span class="mr-3 shadow-sm font-mono text-6xl text-cerise-red-50 bg-cerise-red-400 pt-6 px-6 py-3 rounded-md">
 						<div class="">{heartbeat()}</div>
+					</span>
+					<span class="font-mono text-sm text-neutral-400 bg-cerise-red-100 mr-4 mt-16">
+						bpm
 					</span>
 				</div>
 			</div>

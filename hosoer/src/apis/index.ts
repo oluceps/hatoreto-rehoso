@@ -1,7 +1,6 @@
 import ky from "ky";
-import { stringify } from "postcss";
 
-const url = "http://localhost:7000";
+const url = "https://api.heartrate.nyaw.xyz";
 
 interface Result {
 	rate: number;

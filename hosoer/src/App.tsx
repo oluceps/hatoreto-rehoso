@@ -14,8 +14,8 @@ const App: Component = () => {
 	return (
 		<div class="w-screen h-screen overflow-hidden">
 			<div class="flex-row justify-end items-center h-auto bg-cerise-red-50" />
-			<div class="bg-cerise-red-50 backdrop-filter-none h-full w-full grid grid-rows-5 grid-cols-3 ">
-				<div class="flex overflow-auto justify-end items-center shadow-lg row-start-2 row-span-2 col-start-2 col-span-1 bg-cerise-red-100 rounded-xl">
+			<div class="bg-cerise-red-50 backdrop-filter-none h-full w-full grid grid-rows-7 md:grid-rows-8 grid-cols-3 md:grid-cols-5">
+				<div class="flex overflow-auto justify-end items-center shadow-lg mx-4 md:row-start-3 md:row-span-3 md:col-start-2 md:col-span-3 row-start-3 row-span-3 col-start-1 col-span-3 bg-cerise-red-100 rounded-xl">
 					<div class="animate-pulse w-full flex justify-start items-center ml-11">
 						<div>
 							{/* biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
@@ -37,10 +37,10 @@ const App: Component = () => {
 						</div>
 					</div>
 
-					<span class="mr-3 shadow-sm font-mono text-6xl text-cerise-red-50 bg-cerise-red-400 pt-6 px-6 py-3 rounded-md">
+					<span class="mr-3 shadow-md font-mono text-6xl text-cerise-red-50 bg-cerise-red-400 px-6 pb-3 pt-5 rounded-md">
 						<div class="">{heartbeat()}</div>
 					</span>
-					<span class="font-mono text-sm text-neutral-400 bg-cerise-red-100 mr-4 mt-16">
+					<span class="font-mono text-md text-neutral-400 bg-cerise-red-100 mr-4 mt-16">
 						bpm
 					</span>
 				</div>

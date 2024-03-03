@@ -3,12 +3,11 @@ import { createEffect, createSignal } from "solid-js";
 import { getHeartbeat } from "./apis/index";
 
 const App: Component = () => {
-	const [heartbeat, setHeartbeat] = createSignal<string>("50");
+	const [heartbeat, setHeartbeat] = createSignal<string>("~");
 	createEffect(async () => {
-		const interval = setInterval(async () => {
-			setHeartbeat(await getHeartbeat());
-		}, 1000);
-		return () => clearInterval(interval);
+		getHeartbeat((data: string) => {
+			setHeartbeat(data);
+		});
 	});
 
 	return (

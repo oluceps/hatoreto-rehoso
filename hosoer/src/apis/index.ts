@@ -1,18 +1,31 @@
-import ky from "ky";
-
-const url = "https://api.heartrate.nyaw.xyz";
-
 interface Result {
 	rate: number;
 }
 
-export const getHeartbeat = async () => {
-	try {
-		// return { "rate": number }
-		const json = await ky.get(url).json<Result>();
-		return json.rate.toString();
-	} catch (e) {
-		console.error(e);
-		return "∞";
+let socket: WebSocket | null = null;
+
+export const getHeartbeat = (onMessage: (data: string) => void) => {
+	// Close the previous socket, if it exists
+	if (socket !== null) {
+		socket.close();
 	}
+
+	// Create a new WebSocket connection
+	socket = new WebSocket("wss://api.heartrate.nyaw.xyz");
+
+	// Set up the onmessage handler
+	socket.onmessage = (event) => {
+		const data: Result = JSON.parse(event.data);
+		onMessage(data.rate.toString());
+	};
+
+	// Set up the onclose handler
+	socket.onclose = () => {
+		console.log("WebSocket closed");
+	};
+
+	// Set up the onerror handler
+	socket.onerror = (error) => {
+		console.error(`WebSocket error: ${error}`);
+	};
 };

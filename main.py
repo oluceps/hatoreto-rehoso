@@ -2,9 +2,7 @@ import asyncio
 from bleak import BleakClient, BleakScanner
 import logging
 import os
-import threading
-import http.server
-from http import HTTPStatus
+import websockets
 import json
 
 global rate
@@ -42,22 +40,16 @@ async def main():
         while True:
             await asyncio.sleep(10.0)
 
-class RateHandler(http.server.SimpleHTTPRequestHandler):
-    def do_GET(self):
-        self.send_response(HTTPStatus.OK)
-        self.send_header('Content-type', 'application/json')
-        self.send_header('Access-Control-Allow-Origin', '*')
-        self.end_headers()
-        self.wfile.write(json.dumps({'rate': rate}).encode())
-
-def run_http_server():
-    server_address = ('0.0.0.0', 7000)
-    httpd = http.server.HTTPServer(server_address, RateHandler)
-    httpd.serve_forever()
+async def websocket_handler(websocket, path):
+    while True:
+        await websocket.send(json.dumps({'rate': rate}))
+        await asyncio.sleep(1)  # send data every second
 
 def start():
-    threading.Thread(target=run_http_server).start()
-    asyncio.run(main())
+    start_server = websockets.serve(websocket_handler, '0.0.0.0', 7000)
+
+    asyncio.get_event_loop().run_until_complete(asyncio.gather(start_server, main()))
+    asyncio.get_event_loop().run_forever()
 
 if __name__ == "__main__":
     start()

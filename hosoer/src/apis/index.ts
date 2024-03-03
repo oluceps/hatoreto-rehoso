@@ -22,6 +22,7 @@ export const getHeartbeat = (onMessage: (data: string) => void) => {
 	// Set up the onclose handler
 	socket.onclose = () => {
 		console.log("WebSocket closed");
+		onMessage("~");
 	};
 
 	// Set up the onerror handler

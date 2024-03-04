@@ -6,7 +6,7 @@ use std::{
     time::Duration,
 };
 use tokio::{
-    sync::mpsc::{self, channel, Receiver, Sender},
+    sync::mpsc::{channel, Receiver, Sender},
     time,
 };
 use uuid::Uuid;
@@ -37,13 +37,12 @@ async fn main() -> Result<()> {
 
     let addr = "[::1]:7000".parse()?;
 
-    let (tx, rx): (
-        mpsc::Sender<Result<Rate, Status>>,
-        mpsc::Receiver<Result<Rate, Status>>,
-    ) = mpsc::channel(8);
+    type RateRes = Result<Rate, Status>;
+
+    let (tx, rx): (Sender<RateRes>, Receiver<RateRes>) = channel(8);
 
     let heartrate_service: HeartServer<HeartRate> =
-        HeartServer::from_arc(Arc::new(HeartRate::from_rx(Arc::new(rx))));
+        HeartServer::new(HeartRate::from_rx(Arc::new(rx)));
 
     tokio::spawn(async move {
         let _ = Server::builder()
@@ -52,9 +51,7 @@ async fn main() -> Result<()> {
             .await;
     });
 
-    let peripheral =
-        handle_peripheral::get_peripherals(PERIPHERAL_ADDR_MATCH, NOTIFY_CHARACTERISTIC_UUID)
-            .await?;
+    let peripheral = handle_peripheral::get_peripherals(PERIPHERAL_ADDR_MATCH).await?;
 
     let properties = peripheral.properties().await?.unwrap();
     let local_addr = properties.address.to_string();
@@ -96,7 +93,7 @@ async fn main() -> Result<()> {
                     let rate = Rate { value: *msg as i32 };
                     println!("Received data  {:?}", msg);
                     match tx.send(Result::<_, Status>::Ok(rate)).await {
-                        Ok(_) => (),
+                        Ok(_) => (), // TODO: what?
                         Err(_) => (),
                     }
                 }

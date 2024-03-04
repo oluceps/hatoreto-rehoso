@@ -5,7 +5,7 @@ use std::time::Duration;
 use tokio::time;
 use uuid::Uuid;
 
-pub async fn get_peripherals(addr: &str, char_uuid: Uuid) -> Result<Peripheral> {
+pub async fn get_peripherals(addr: &str) -> Result<Peripheral> {
     let manager = Manager::new().await?;
     let adapter_list = manager.adapters().await?;
     if adapter_list.is_empty() {

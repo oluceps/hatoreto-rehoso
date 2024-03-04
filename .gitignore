@@ -4,3 +4,8 @@
 /dist
 /result
 .env
+
+
+# Added by cargo
+
+/target

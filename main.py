@@ -6,7 +6,7 @@ import websockets
 import json
 
 global rate
-rate=0
+rate='~'
 
 def load_env():
     global DEVICE_ADDRESS,NOTIFY_UUID,WRITE_UUID
@@ -40,7 +40,7 @@ async def main():
         while True:
             await asyncio.sleep(10.0)
 
-async def websocket_handler(websocket, path):
+async def websocket_handler(websocket):
     while True:
         await websocket.send(json.dumps({'rate': rate}))
         await asyncio.sleep(1)  # send data every second

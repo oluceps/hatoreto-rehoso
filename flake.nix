@@ -5,6 +5,10 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     devenv.url = "github:cachix/devenv";
     poetry2nix.url = "github:nix-community/poetry2nix";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   nixConfig = {
@@ -38,9 +42,16 @@
               enable = true;
               npm.install.enable = false;
             };
+            # languages.rust = {
+            #   enable = true;
+            #   channel = "nightly";
+            #   components = [ "rustc" "cargo" "clippy" "rustfmt" "rust-analyzer" ];
+            # };
             packages = with pkgs;[
-              bun
               biome
+
+              dbus
+              pkg-config
             ];
             dotenv.enable = true;
             enterShell = ''

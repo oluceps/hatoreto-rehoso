@@ -2,15 +2,13 @@ use tonic::{transport::Server, Request, Response, Status};
 
 use std::sync::Arc;
 
-type RateRx = Arc<mpsc::Receiver<Result<Rate, Status>>>;
+type RateInnerRx = Arc<mpsc::Receiver<Result<Rate, Status>>>;
 
-pub struct HeartRate {
-    rate_rx: RateRx,
-}
+pub struct HeartRate(RateInnerRx);
 
 impl HeartRate {
-    pub fn from_rx(rate_rx: RateRx) -> Self {
-        Self { rate_rx }
+    pub fn from_rx(rate_rx: RateInnerRx) -> Self {
+        Self(rate_rx)
     }
 }
 
@@ -42,7 +40,7 @@ impl Heart for HeartRate {
 
         println!("Got a request: {:?}", request);
 
-        let rx = self.rate_rx.clone();
+        let rx = self.0.clone();
         let rx = Arc::try_unwrap(rx).unwrap();
 
         let output_stream = ReceiverStream::new(rx);

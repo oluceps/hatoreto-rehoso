@@ -1,0 +1,11 @@
+syntax = "proto3";
+package heartrate;
+import "google/protobuf/empty.proto";
+
+service Heart {
+  rpc Beat (stream google.protobuf.Empty) returns (stream Rate) {}
+}
+
+message Rate {
+  int32 value = 1;
+}

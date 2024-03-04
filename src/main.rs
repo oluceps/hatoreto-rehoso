@@ -1,36 +1,56 @@
 use btleplug::api::{CharPropFlags, Peripheral};
 use eyre::Result;
 use futures::stream::StreamExt;
-use std::{sync::Arc, time::Duration};
+use std::{
+    sync::{Arc, Mutex},
+    time::Duration,
+};
 use tokio::{
-    sync::{
-        mpsc::{channel, Receiver, Sender},
-        Mutex,
-    },
+    sync::mpsc::{self, channel, Receiver, Sender},
     time,
 };
 use uuid::Uuid;
 
 mod handle_peripheral;
+mod heartrate;
+
+use heartrate::heart_server;
+mod srv;
 
 /// Only devices whose name contains this string will be tried.
 const PERIPHERAL_ADDR_MATCH: &str = "D0:0E:F7:6F:5F:88";
 /// UUID of the characteristic for which we should subscribe to notifications.
 const NOTIFY_CHARACTERISTIC_UUID: Uuid = Uuid::from_u128(0x00002a37_0000_1000_8000_00805f9b34fb);
 
-struct Rate<T>(Arc<Mutex<(Sender<T>, Receiver<T>)>>);
+pub use heartrate::Rate;
 
-impl Rate<T> {
-    fn new() -> Self {
-        Arc::new(Mutex::new(channel(1)))
-    }
-}
+use crate::{heartrate::heart_server::HeartServer, srv::HeartRate};
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    use tonic::transport::Server;
+    use tonic::Status;
+
     pretty_env_logger::init();
 
-    let rate_chan: Rate<u16> = Rate::new();
+    tonic_build::compile_protos("../rate.proto")?;
+
+    let addr = "[::1]:7000".parse()?;
+
+    let (tx, rx): (
+        mpsc::Sender<Result<Rate, Status>>,
+        mpsc::Receiver<Result<Rate, Status>>,
+    ) = mpsc::channel(8);
+
+    let heartrate_service: HeartServer<HeartRate> =
+        HeartServer::from_arc(Arc::new(HeartRate::from_rx(Arc::new(rx))));
+
+    tokio::spawn(async move {
+        let _ = Server::builder()
+            .add_service(heartrate_service)
+            .serve(addr)
+            .await;
+    });
 
     let peripheral =
         handle_peripheral::get_peripherals(PERIPHERAL_ADDR_MATCH, NOTIFY_CHARACTERISTIC_UUID)
@@ -70,11 +90,15 @@ async fn main() -> Result<()> {
             {
                 println!("Subscribing to characteristic {:?}", characteristic.uuid);
                 peripheral.subscribe(&characteristic).await?;
-                // Print the first 4 notifications received.
                 let mut notification_stream = peripheral.notifications().await?;
-                // Process while the BLE connection is not broken or stopped.
                 while let Some(data) = notification_stream.next().await {
-                    println!("Received data  {:?}", data.value.get(1).unwrap());
+                    let msg = data.value.get(1).unwrap();
+                    let rate = Rate { value: *msg as i32 };
+                    println!("Received data  {:?}", msg);
+                    match tx.send(Result::<_, Status>::Ok(rate)).await {
+                        Ok(_) => (),
+                        Err(_) => (),
+                    }
                 }
             }
         }

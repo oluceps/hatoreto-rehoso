@@ -9,34 +9,64 @@ use tokio::{
     time,
 };
 use tokio_stream::StreamExt;
+use tonic::{transport::Server, Status};
 use uuid::Uuid;
 
+use crate::heartrate::{heart_server::Heart, Rate};
+
 mod handle_peripheral;
+use heartrate::heart_server;
 
 /// Only devices whose name contains this string will be tried.
 const PERIPHERAL_ADDR_MATCH: &str = "D0:0E:F7:6F:5F:88";
 /// UUID of the characteristic for which we should subscribe to notifications.
 const NOTIFY_CHARACTERISTIC_UUID: Uuid = Uuid::from_u128(0x00002a37_0000_1000_8000_00805f9b34fb);
 
+mod heartrate {
+    tonic::include_proto!("heartrate");
+}
+
+#[derive(Default)]
+pub struct HeartRate {}
+
+#[tonic::async_trait]
+impl Heart for HeartRate {
+    fn beat<'life0, 'async_trait>(
+        &'life0 self,
+        request: tonic::Request<tonic::Streaming<()>>,
+    ) -> ::core::pin::Pin<
+        Box<
+            dyn ::core::future::Future<
+                    Output = std::result::Result<tonic::Response<Self::BeatStream>, tonic::Status>,
+                > + ::core::marker::Send
+                + 'async_trait,
+        >,
+    >
+    where
+        'life0: 'async_trait,
+        Self: 'async_trait,
+    {
+    }
+}
+
 #[tokio::main]
 async fn main() -> Result<()> {
-    use tonic::transport::Server;
-    use tonic::Status;
-
     pretty_env_logger::init();
 
-    // let addr = "[::1]:7000".parse()?;
+    let addr = "[::1]:7000".parse()?;
 
-    // type RateRes = Result<Rate, Status>;
+    type RateRes = Result<Rate, Status>;
 
-    // let (tx, rx): (Sender<RateRes>, Receiver<RateRes>) = channel(8);
+    let (tx, rx): (Sender<RateRes>, Receiver<RateRes>) = channel(8);
 
-    // tokio::spawn(async move {
-    //     let _ = Server::builder()
-    //         .add_service(heartrate_service)
-    //         .serve(addr)
-    //         .await;
-    // });
+    let heart = HeartRate::default();
+
+    tokio::spawn(async move {
+        let _ = Server::builder()
+            .add_service(heart_server::HeartServer::new(heart))
+            .serve(addr)
+            .await;
+    });
 
     let peripheral = handle_peripheral::get_peripherals(PERIPHERAL_ADDR_MATCH).await?;
 

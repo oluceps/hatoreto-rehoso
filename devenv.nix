@@ -9,6 +9,11 @@
 
   # cachix.enable = true;
   # cachix.pull = [ "wrangler" ];
+  enterShell = ''
+    export PROTOBUF_LOCATION=$(nix eval --raw nixpkgs#protobuf.outPath)
+    export PROTOC=$PROTOBUF_LOCATION/bin/protoc
+    export PROTOC_INCLUDE=$PROTOBUF_LOCATION/include
+  '';
   dotenv.enable = true;
   languages.javascript = {
     enable = true;

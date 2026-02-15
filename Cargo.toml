@@ -4,12 +4,13 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-tokio = { version="1.49.0", features=["full"]}
+tokio = { version = "1.49.0", features = ["full"] }
 rand = "0.10.0" # For simulated data initially
 rand_chacha = "0.10.0"
 rand_core = "0.10.0"
-warp = "0.4" # For HTTP web server
-serde = { version = "1.0", features = ["derive"] } # For JSON serialization/deserialization
+serde = { version = "1.0", features = [
+  "derive",
+] } # For JSON serialization/deserialization
 serde_json = "1.0" # For JSON serialization/deserialization
 futures-util = "0.3.31" # For StreamExt trait
 tokio-stream = "0.1.18" # For BroadcastStream
@@ -19,6 +20,10 @@ btleplug = "0.11.8"
 eyre = "0.6.12"
 pretty_env_logger = "0.5.0"
 uuid = "1.21.0"
-tonic-build = "0.14.4"
 tonic = "0.14.4"
+prost = "0.14.3"
+tonic-prost = "0.14.4"
 
+
+[build-dependencies]
+tonic-prost-build = "0.14.4"

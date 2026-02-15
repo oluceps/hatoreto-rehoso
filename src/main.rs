@@ -33,8 +33,6 @@ async fn main() -> Result<()> {
 
     pretty_env_logger::init();
 
-    tonic_build::compile_protos("../rate.proto")?;
-
     let addr = "[::1]:7000".parse()?;
 
     type RateRes = Result<Rate, Status>;

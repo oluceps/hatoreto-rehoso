@@ -1,6 +1,5 @@
 use btleplug::api::{CharPropFlags, Peripheral};
 use eyre::Result;
-use futures::stream::StreamExt;
 use std::{
     sync::{Arc, Mutex},
     time::Duration,
@@ -9,22 +8,15 @@ use tokio::{
     sync::mpsc::{channel, Receiver, Sender},
     time,
 };
+use tokio_stream::StreamExt;
 use uuid::Uuid;
 
 mod handle_peripheral;
-mod heartrate;
-
-use heartrate::heart_server;
-mod srv;
 
 /// Only devices whose name contains this string will be tried.
 const PERIPHERAL_ADDR_MATCH: &str = "D0:0E:F7:6F:5F:88";
 /// UUID of the characteristic for which we should subscribe to notifications.
 const NOTIFY_CHARACTERISTIC_UUID: Uuid = Uuid::from_u128(0x00002a37_0000_1000_8000_00805f9b34fb);
-
-pub use heartrate::Rate;
-
-use crate::{heartrate::heart_server::HeartServer, srv::HeartRate};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -33,21 +25,18 @@ async fn main() -> Result<()> {
 
     pretty_env_logger::init();
 
-    let addr = "[::1]:7000".parse()?;
+    // let addr = "[::1]:7000".parse()?;
 
-    type RateRes = Result<Rate, Status>;
+    // type RateRes = Result<Rate, Status>;
 
-    let (tx, rx): (Sender<RateRes>, Receiver<RateRes>) = channel(8);
+    // let (tx, rx): (Sender<RateRes>, Receiver<RateRes>) = channel(8);
 
-    let heartrate_service: HeartServer<HeartRate> =
-        HeartServer::new(HeartRate::from_rx(Arc::new(rx)));
-
-    tokio::spawn(async move {
-        let _ = Server::builder()
-            .add_service(heartrate_service)
-            .serve(addr)
-            .await;
-    });
+    // tokio::spawn(async move {
+    //     let _ = Server::builder()
+    //         .add_service(heartrate_service)
+    //         .serve(addr)
+    //         .await;
+    // });
 
     let peripheral = handle_peripheral::get_peripherals(PERIPHERAL_ADDR_MATCH).await?;
 
@@ -88,12 +77,12 @@ async fn main() -> Result<()> {
                 let mut notification_stream = peripheral.notifications().await?;
                 while let Some(data) = notification_stream.next().await {
                     let msg = data.value.get(1).unwrap();
-                    let rate = Rate { value: *msg as i32 };
+                    // let rate = Rate { value: *msg as i32 };
                     println!("Received data  {:?}", msg);
-                    match tx.send(Result::<_, Status>::Ok(rate)).await {
-                        Ok(_) => (), // TODO: what?
-                        Err(_) => (),
-                    }
+                    // match tx.send(Result::<_, Status>::Ok(msg)).await {
+                    //     Ok(_) => (), // TODO: what?
+                    //     Err(_) => (),
+                    // }
                 }
             }
         }

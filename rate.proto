@@ -1,11 +1,26 @@
 syntax = "proto3";
 package heartrate;
-import "google/protobuf/empty.proto";
 
-service Heart {
-  rpc Beat (stream google.protobuf.Empty) returns (stream Rate) {}
+import "google/protobuf/timestamp.proto";
+
+message Frame {
+  oneof payload {
+    Beat rate = 1;
+    Status status = 2;
+  }
 }
 
-message Rate {
+message Beat {
   int32 value = 1;
+  google.protobuf.Timestamp ts = 2;
+  string device_id = 3;
+}
+
+message Status {
+  enum Code {
+    CONNECTED = 0;
+    DISCONNECTED = 1;
+  }
+  Code code = 1;
+  string message = 2;
 }

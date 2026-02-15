@@ -12,10 +12,11 @@ use tokio_stream::StreamExt;
 use tonic::{transport::Server, Status};
 use uuid::Uuid;
 
-use crate::heartrate::{heart_server::Heart, Rate};
+use crate::heartrate::Beat;
+
+// use crate::heartrate::HeartRateData;
 
 mod handle_peripheral;
-use heartrate::heart_server;
 
 /// Only devices whose name contains this string will be tried.
 const PERIPHERAL_ADDR_MATCH: &str = "D0:0E:F7:6F:5F:88";
@@ -26,47 +27,17 @@ mod heartrate {
     tonic::include_proto!("heartrate");
 }
 
-#[derive(Default)]
-pub struct HeartRate {}
-
-#[tonic::async_trait]
-impl Heart for HeartRate {
-    fn beat<'life0, 'async_trait>(
-        &'life0 self,
-        request: tonic::Request<tonic::Streaming<()>>,
-    ) -> ::core::pin::Pin<
-        Box<
-            dyn ::core::future::Future<
-                    Output = std::result::Result<tonic::Response<Self::BeatStream>, tonic::Status>,
-                > + ::core::marker::Send
-                + 'async_trait,
-        >,
-    >
-    where
-        'life0: 'async_trait,
-        Self: 'async_trait,
-    {
-    }
-}
-
 #[tokio::main]
 async fn main() -> Result<()> {
     pretty_env_logger::init();
 
-    let addr = "[::1]:7000".parse()?;
+    // let addr = "[::1]:7000".parse()?;
 
-    type RateRes = Result<Rate, Status>;
+    type RateRes = Result<Beat, Status>;
 
     let (tx, rx): (Sender<RateRes>, Receiver<RateRes>) = channel(8);
 
-    let heart = HeartRate::default();
-
-    tokio::spawn(async move {
-        let _ = Server::builder()
-            .add_service(heart_server::HeartServer::new(heart))
-            .serve(addr)
-            .await;
-    });
+    let beat = Beat::default();
 
     let peripheral = handle_peripheral::get_peripherals(PERIPHERAL_ADDR_MATCH).await?;
 
@@ -106,9 +77,10 @@ async fn main() -> Result<()> {
                 peripheral.subscribe(&characteristic).await?;
                 let mut notification_stream = peripheral.notifications().await?;
                 while let Some(data) = notification_stream.next().await {
-                    let msg = data.value.get(1).unwrap();
+                    // let msg = data.value.get(1).unwrap();
                     // let rate = Rate { value: *msg as i32 };
-                    println!("Received data  {:?}", msg);
+                    // TODO: https://www.bluetooth.com/specifications/specs/gatt-specification-supplement-5/ 0x2A37 ?
+                    println!("Received data  {:?}", data.value.get(1));
                     // match tx.send(Result::<_, Status>::Ok(msg)).await {
                     //     Ok(_) => (), // TODO: what?
                     //     Err(_) => (),

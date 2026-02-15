@@ -3,18 +3,20 @@ name = "hatoreto-rehoso"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
-btleplug = "0.11.5"
+tokio = { version="1.49.0", features=["full"]}
+rand = "0.8.5" # For simulated data initially
+rand_chacha = "0.3.1"
+rand_core = "0.6.4"
+warp = "0.3" # For HTTP web server
+serde = { version = "1.0", features = ["derive"] } # For JSON serialization/deserialization
+serde_json = "1.0" # For JSON serialization/deserialization
+futures-util = "0.3.31" # For StreamExt trait
+tokio-stream = "0.1.18" # For BroadcastStream
+
+# For BLE functionality (will be re-introduced later)
+btleplug = "0.11.8"
 eyre = "0.6.12"
-futures = "0.3.30"
-futures-util = "0.3.30"
 pretty_env_logger = "0.5.0"
-prost = "0.12.3"
-rand = "0.8.5"
-tokio = { version="1.36.0", features=["full"]}
-tokio-stream = "0.1.14"
-tonic = "0.11.0"
-tonic-build = "0.11.0"
-uuid = "1.7.0"
+uuid = "1.21.0"
+

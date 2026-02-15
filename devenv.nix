@@ -36,6 +36,9 @@
     biome
     rustup
     wasm-pack
+    protobuf
+    dbus # Added for btleplug
+    pkg-config # Added to help resolve system library dependencies
     # (rust-bin.nightly.latest.default.override { extensions = [ "rust-src" ]; })
     gemini-cli
     # netlify-cli

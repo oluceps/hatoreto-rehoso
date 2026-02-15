@@ -1,6 +1,4 @@
-interface Result {
-	rate: number;
-}
+import { Frame } from "../grpc/rate";
 
 let socket: WebSocket | null = null;
 
@@ -10,13 +8,24 @@ export const getHeartbeat = (onMessage: (data: string) => void) => {
 		socket.close();
 	}
 
-	// Create a new WebSocket connection
-	socket = new WebSocket("wss://api.heartrate.nyaw.xyz");
+	// Create a new WebSocket connection to local Rust backend
+	socket = new WebSocket("ws://localhost:3010/ws");
+	socket.binaryType = "arraybuffer";
 
 	// Set up the onmessage handler
 	socket.onmessage = (event) => {
-		const data: Result = JSON.parse(event.data);
-		onMessage(data.rate.toString());
+		try {
+			const buffer = new Uint8Array(event.data);
+			const frame = Frame.decode(buffer);
+
+			if (frame.rate) {
+				onMessage(frame.rate.value.toString());
+			} else if (frame.status) {
+				console.log("Status update:", frame.status);
+			}
+		} catch (e) {
+			console.error("Failed to decode frame", e);
+		}
 	};
 
 	// Set up the onclose handler

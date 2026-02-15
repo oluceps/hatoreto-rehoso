@@ -106,7 +106,7 @@ async fn main() -> Result<()> {
         .route("/ws", get(ws_handler))
         .with_state(app_state);
 
-    let http_addr = SocketAddr::from(([0, 0, 0, 0], 3000));
+    let http_addr: SocketAddr = "[::]:3010".parse().unwrap();
     println!("HTTP/WebSocket server listening on {}", http_addr);
     println!("gRPC server listening on {}", grpc_addr);
 

@@ -1,3 +1,6 @@
+<img width="2546" height="1611" alt="image" src="https://github.com/user-attachments/assets/2987aecf-a682-4049-a22b-e3f5de3e148f" />
+
+
 ## envs
 
 |Variable|Description|
@@ -25,4 +28,3 @@
   bun run dev
 ```
 
-![](./.attach/view.png)

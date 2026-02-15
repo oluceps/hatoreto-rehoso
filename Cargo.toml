@@ -23,7 +23,9 @@ uuid = "1.21.0"
 tonic = "0.14.4"
 prost = "0.14.3"
 tonic-prost = "0.14.4"
+prost-types = "0.14.3"
 axum = {version = "0.8.8", features = ["ws", "macros"] } 
+tokio-tungstenite = "0.26.1"
 
 
 [build-dependencies]

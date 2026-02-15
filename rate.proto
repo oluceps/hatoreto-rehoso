@@ -24,3 +24,9 @@ message Status {
   Code code = 1;
   string message = 2;
 }
+
+message Empty {}
+
+service HeartRate {
+  rpc StreamRate(Empty) returns (stream Frame);
+}
